@@ -1,4 +1,13 @@
 import { useState } from "react";
+import emailjs from "@emailjs/browser";
+
+const EMAIL = "mhosseini@torontomu.ca";
+const LINKEDIN_URL = "https://www.linkedin.com/in/mahsa-hosseini-094106246/";
+
+// 🔐 EmailJS config – must match your dashboard
+const EMAILJS_SERVICE_ID = "service_l5kmtum";
+const EMAILJS_TEMPLATE_ID = "template_7akg8g9";
+const EMAILJS_PUBLIC_KEY = "_rBEVQhsj99Vo7nrW";
 
 const projects = [
   {
@@ -59,6 +68,7 @@ export default function App() {
     message: "",
   });
   const [formStatus, setFormStatus] = useState("");
+  const [isSending, setIsSending] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
   const handleChange = (e) => {
@@ -66,22 +76,42 @@ export default function App() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  // ✅ Send using EmailJS (no mail app)
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!form.name || !form.email || !form.message) {
       setFormStatus("Please fill in all fields ✨");
       return;
     }
 
-    const subject = encodeURIComponent(
-      `Portfolio contact from ${form.name || "someone"}`
-    );
-    const body = encodeURIComponent(
-      `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`
-    );
+    setIsSending(true);
+    setFormStatus("");
 
-    window.location.href = `mailto:mhossieni@torontomu.ca?subject=${subject}&body=${body}`;
-    setFormStatus("Opening your email app… 💌");
+    try {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          from_name: form.name,
+          reply_to: form.email,
+          message: form.message,
+        },
+        {
+          publicKey: EMAILJS_PUBLIC_KEY,
+        }
+      );
+
+      setForm({ name: "", email: "", message: "" });
+      setFormStatus("Thank you! Your message has been sent 💌");
+    } catch (error) {
+      console.error("EmailJS error:", error);
+      setFormStatus(
+        "Oops! Something went wrong 😢 Please check the keys in EmailJS (service, template, public key) and try again."
+      );
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -149,7 +179,7 @@ export default function App() {
                 🐙 GitHub
               </a>
               <a
-                href="https://www.linkedin.com/in/mahsa-hosseini-094106246/"
+                href={LINKEDIN_URL}
                 target="_blank"
                 rel="noreferrer"
                 className="btn btn-solid sparkle"
@@ -382,7 +412,7 @@ export default function App() {
           <span />
         </div>
 
-        {/* CONTACT */}
+        {/* CONTACT – EmailJS form */}
         <section id="contact" className="section fade-up">
           <div className="section-header">
             <span className="section-emoji">📬</span>
@@ -390,27 +420,50 @@ export default function App() {
           </div>
           <p className="section-subtitle">
             Best way to reach me is by email or LinkedIn. You can also send me a
-            message directly using the form below.
+            message directly using this little pink form ✨
           </p>
 
           <div className="contact-layout">
-            <div className="contact-row">
-              <a
-                href="mailto:mhossieni@torontomu.ca"
-                className="btn btn-outline sparkle"
+            {/* left: info */}
+            <div className="resume-card resume-card-wide">
+              <p className="resume-card-title">Let&apos;s connect 💖</p>
+              <p style={{ fontSize: 13, marginBottom: 10 }}>
+                I&apos;m open to internship opportunities, software projects,
+                and collaborations. Feel free to reach out any time.
+              </p>
+
+              <div className="contact-row" style={{ marginTop: 8 }}>
+                <a
+                  href={`mailto:${EMAIL}`}
+                  className="btn btn-outline sparkle"
+                >
+                  ✉️ {EMAIL}
+                </a>
+                <a
+                  href={LINKEDIN_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-outline sparkle"
+                >
+                  🔗 LinkedIn profile
+                </a>
+              </div>
+
+              <div
+                style={{
+                  marginTop: 14,
+                  display: "flex",
+                  gap: 8,
+                  fontSize: 18,
+                }}
               >
-                ✉️ mhossieni@torontomu.ca
-              </a>
-              <a
-                href="www.linkedin.com/in/mahsa-hosseini-094106246"
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-outline sparkle"
-              >
-                🔗 LinkedIn profile
-              </a>
+                <span className="floaty">💖</span>
+                <span className="floaty">🌸</span>
+                <span className="floaty">✨</span>
+              </div>
             </div>
 
+            {/* right: form */}
             <form className="contact-form" onSubmit={handleSubmit}>
               <div className="field">
                 <label htmlFor="name">Name</label>
@@ -446,8 +499,12 @@ export default function App() {
                 />
               </div>
 
-              <button type="submit" className="btn btn-solid sparkle">
-                💌 Send message
+              <button
+                type="submit"
+                className="btn btn-solid sparkle"
+                disabled={isSending}
+              >
+                {isSending ? "Sending…" : "💌 Send message"}
               </button>
 
               {formStatus && <p className="form-status">{formStatus}</p>}
