@@ -24,7 +24,7 @@ const projects = [
   },
   {
     title: "Weather Dashboard — React + API Integration",
-    timeline: "2024",
+    timeline: "2025",
     tech: "React, REST API, Async JS",
     live: "",
     github: "",
@@ -35,8 +35,21 @@ const projects = [
     ],
   },
   {
+    title: "Robot Guidance System — Assembly",
+    timeline: "2025",
+    tech: "Assembly",
+    live: "",
+    github: "",
+    bullets: [
+      "Developed autonomous robot navigation using sensor interrupts to handle real-time environmental inputs.",
+      "Implemented deterministic branching and control logic for real-time movement decisions under constraints.",
+      "Debugged sensor-driven control logic by tracing execution paths in real-time scenarios.",
+      "Analyzed execution timing and control flow to identify latency sources and optimize real-time system responsiveness.",
+    ],
+  },
+  {
     title: "University Enrollment System — Oracle SQL & Flask",
-    timeline: "2024",
+    timeline: "2025",
     tech: "Python, Flask, Oracle SQL",
     live: "",
     github: "",
@@ -48,7 +61,7 @@ const projects = [
   },
   {
     title: "Bookstore Interface — JavaFX → React UI",
-    timeline: "2023",
+    timeline: "2024",
     tech: "React, JavaFX (legacy), UI Refactor",
     live: "",
     github: "",
@@ -59,6 +72,7 @@ const projects = [
     ],
   },
 ];
+
 
 export default function App() {
   const [dark, setDark] = useState(false);
